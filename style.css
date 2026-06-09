@@ -1,77 +1,111 @@
+/* General Page */
+
 body {
   margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(135deg, #f5f5f5, #eaeaea);
-  color: #333;
+  padding: 20px;
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #f4f4f4;
 }
 
-.container {
-  width: 90%;
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 25px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
+/* Main Title */
 
 h1 {
-  text-align: center;
-  color: maroon;
-  margin-bottom: 25px;
-  font-size: 2rem;
+  margin-bottom: 30px;
 }
 
-.question {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: maroon;
+/* Set Selection */
+
+#setSelection {
+  margin-bottom: 30px;
 }
 
-.question {
-  font-size: 1.2rem;
-  font-weight: bold;
+#setSelection h2 {
   margin-bottom: 20px;
-  color: maroon;
-  text-align: center;   /* center the question text */
 }
+
+/* Quiz Area */
+
+#quiz {
+  max-width: 900px;
+  margin: auto;
+  font-size: 1.2rem;
+}
+
+/* Question Card */
+
+.question {
+  background-color: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 3px solid black;
+  text-align: left;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
+}
+
+/* Options Container */
 
 .options {
   display: flex;
   flex-direction: column;
-  align-items: center;  /* center the buttons */
   gap: 12px;
 }
 
-.options button {
-  width: 100%;
-  max-width: 400px;     /* limit button width */
+/* Buttons */
+
+button {
+  font-size: 1.1rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+
+  background-color: white;
+
+  border: 3px solid black;
+  border-radius: 10px;
+
   padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background-color: maroon;
-  color: white;
-  font-size: 16px;
+
   cursor: pointer;
-  transition: all 0.3s ease;
+
+  transition: 0.2s;
 }
 
-.options button:hover {
-  background-color: #5c0000;
+button:hover {
+  background-color: #e9e9e9;
   transform: scale(1.02);
 }
 
-/* Mobile view adjustments */
-@media (max-width: 600px) {
-  .question {
-    font-size: 1rem;
-  }
+button:active {
+  transform: scale(0.98);
+}
 
-  .options button {
-    max-width: 100%;   /* full width on small screens */
-    font-size: 15px;
+/* Results */
+
+#result {
+  margin-top: 20px;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+/* Score Screen */
+
+.scoreCard {
+  max-width: 700px;
+  margin: auto;
+  background-color: white;
+  padding: 25px;
+  border-radius: 15px;
+  border: 3px solid black;
+}
+
+/* Mobile Version */
+
+@media (max-width: 768px) {
+
+  body {
     padding: 10px;
   }
 
@@ -79,16 +113,26 @@ h1 {
     font-size: 1.6rem;
   }
 
-  .question {
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  #quiz {
     font-size: 1rem;
   }
 
-  .options button {
+  .question {
+    padding: 15px;
     font-size: 0.95rem;
-    padding: 12px;
   }
 
-  .result {
-    font-size: 1.2rem;
+  button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 14px;
+  }
+
+  #result {
+    font-size: 1.1rem;
   }
 }

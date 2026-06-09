@@ -7,9 +7,24 @@
 </head>
 <body>
   <h1>JavaScript/Node.js Reviewer</h1>
-  <div id="quiz"></div>
-  <div class="result" id="result"></div>
+  <div id="setSelection">
+  <h2>Choose a Quiz Set</h2>
 
+  <button onclick="startQuiz('A')">
+    Set A - Fundamentals
+  </button>
+
+  <button onclick="startQuiz('B')">
+    Set B - Applications
+  </button>
+
+  <button onclick="startQuiz('C')">
+    Set C - Debugging
+  </button>
+  </div>
+
+<div id="quiz"></div>
+<div id="result"></div>
   <!-- External JS file -->
   <script src="quiz1.js"></script>
 </body>
