@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js Notes — Study Reviewer</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../../index.html">Study<span>.</span>Reviewer</a>
+    <nav class="site-nav">
+      <a href="../../index.html">Home</a>
+      <a href="../index.html" class="is-active">Notes</a>
+      <a href="../../quizzes/index.html">Quizzes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Notes</a> / Node.js</div>
+  <h1 class="page-title">Node.js</h1>
+  <p class="page-subtitle">A quick reference covering the basics tested in the matching quiz.</p>
+
+  <div class="notes-content">
+
+    <h2>Core modules</h2>
+    <ul>
+      <li><code>fs</code> — read and write files (<code>fs.readFile()</code>, <code>fs.writeFile()</code>, <code>fs.unlink()</code> to delete)</li>
+      <li><code>http</code> — create web servers</li>
+      <li><code>path</code> — build and inspect file paths (<code>path.join()</code>, <code>path.dirname()</code>, <code>path.extname()</code>)</li>
+      <li><code>os</code> — information about the operating system, e.g. <code>os.platform()</code></li>
+      <li><code>crypto</code> — cryptographic functionality, such as generating secure random tokens</li>
+    </ul>
+    <pre><code>const fs = require('fs');
+fs.readFile('notes.txt', 'utf8', (err, data) => {
+  if (err) return console.error(err);
+  console.log(data);
+});</code></pre>
+    <div class="note-tip"><code>fs.readFile()</code> is asynchronous — the data isn't available until the callback runs, not on the next line.</div>
+
+    <h2>CommonJS modules</h2>
+    <p>Use <code>require()</code> to load a module and <code>module.exports</code> to expose values from one.</p>
+    <pre><code>// math.js
+function add(a, b) { return a + b; }
+module.exports = { add };
+
+// app.js
+const { add } = require('./math');</code></pre>
+
+    <h2>process &amp; environment variables</h2>
+    <p><code>process</code> is a global object with info about the running program. Environment variables (e.g. secrets, ports) are read through <code>process.env</code>, never hardcoded.</p>
+    <pre><code>const port = process.env.PORT || 3000;</code></pre>
+
+    <h2>npm</h2>
+    <ul>
+      <li><code>npm install &lt;package&gt;</code> — install a dependency</li>
+      <li><code>npm install &lt;package&gt; --save-dev</code> — install a development-only dependency</li>
+      <li><code>package.json</code> — lists a project's dependencies and scripts</li>
+      <li><code>node_modules</code> — where installed packages live</li>
+      <li><code>npm run &lt;script&gt;</code> — runs a script defined in <code>package.json</code></li>
+    </ul>
+
+    <h2>HTTP &amp; REST basics</h2>
+    <ul>
+      <li><code>GET</code> — retrieve data</li>
+      <li><code>POST</code> — create a new resource</li>
+      <li><code>PUT</code> / <code>PATCH</code> — update a resource</li>
+      <li><code>DELETE</code> — remove a resource</li>
+    </ul>
+    <p>Common status codes: <code>200</code> success, <code>404</code> not found, <code>500</code> server error.</p>
+
+    <h2>Express essentials</h2>
+    <p>If <code>req.body</code> is <code>undefined</code> in a POST handler, the JSON body-parsing middleware is usually missing:</p>
+    <pre><code>app.use(express.json());</code></pre>
+    <p>Serve a folder of static files with:</p>
+    <pre><code>app.use(express.static(__dirname + '/public'));</code></pre>
+
+    <h2>Async patterns &amp; the event loop</h2>
+    <p>Node handles many concurrent requests without blocking thanks to its event loop and non-blocking I/O — long-running work (like file or network access) doesn't stop the rest of the program from running.</p>
+    <pre><code>app.get('/', async (req, res) => {
+  try {
+    const data = await getData();
+    res.json(data);
+  } catch (err) {
+    res.status(500).send('Something went wrong');
+  }
+});</code></pre>
+
+  </div>
+</main>
+
+<footer class="site-footer">Related: <a href="../../quizzes/nodejs/index.html">Take the Node.js quiz →</a></footer>
+
+</body>
+</html>

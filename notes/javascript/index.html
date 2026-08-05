@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript Fundamentals Notes — Study Reviewer</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../../index.html">Study<span>.</span>Reviewer</a>
+    <nav class="site-nav">
+      <a href="../../index.html">Home</a>
+      <a href="../index.html" class="is-active">Notes</a>
+      <a href="../../quizzes/index.html">Quizzes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Notes</a> / JavaScript Fundamentals</div>
+  <h1 class="page-title">JavaScript Fundamentals</h1>
+  <p class="page-subtitle">A quick reference covering the basics tested in the matching quiz.</p>
+
+  <div class="notes-content">
+
+    <h2>Variables</h2>
+    <p><code>let</code> declares a block-scoped variable that can be reassigned. <code>const</code> declares a block-scoped binding that cannot be reassigned (though objects/arrays it points to can still be mutated). <code>var</code> is function-scoped and mostly avoided in modern code.</p>
+    <pre><code>let count = 1;
+const name = "Ada";
+count = 2;      // ok
+name = "Grace"; // ❌ TypeError: Assignment to constant variable.</code></pre>
+
+    <h2>Equality: == vs ===</h2>
+    <p><code>===</code> compares value and type with no conversion. <code>==</code> compares after converting types, which often causes surprising results.</p>
+    <pre><code>5 === '5'   // false
+5 == '5'    // true</code></pre>
+
+    <h2>Types</h2>
+    <p><code>undefined</code> means a variable was declared but never assigned a value. <code>null</code> means "intentionally empty." <code>typeof null</code> famously returns <code>"object"</code> — a long-standing JavaScript quirk.</p>
+
+    <h2>Functions</h2>
+    <p>Declared with <code>function</code>, and values are sent back with <code>return</code>. Arrow functions (<code>() =&gt; {}</code>) are a shorter alternative commonly used for callbacks.</p>
+
+    <h2>Arrays</h2>
+    <ul>
+      <li><code>push()</code> / <code>pop()</code> — add / remove from the end</li>
+      <li><code>shift()</code> / <code>unshift()</code> — remove / add at the start</li>
+      <li><code>map()</code> — transform every item into a new array</li>
+      <li><code>filter()</code> — keep only items that pass a test</li>
+      <li><code>find()</code> — return the first item that matches</li>
+      <li><code>reduce()</code> — combine all items into a single value</li>
+      <li><code>slice()</code> — copy a portion without changing the original</li>
+      <li><code>concat()</code> — combine two arrays into a new one</li>
+    </ul>
+    <pre><code>[1, 2, 3].map(x => x * 2);        // [2, 4, 6]
+[1, 2, 3].filter(x => x > 1);     // [2, 3]
+[1, 2, 3].reduce((a, b) => a + b) // 6</code></pre>
+
+    <h2>JSON</h2>
+    <p><code>JSON.parse()</code> turns a JSON string into a JavaScript object. <code>JSON.stringify()</code> does the reverse.</p>
+
+    <h2>Async JavaScript</h2>
+    <p>An <code>async</code> function always returns a Promise. Inside it, <code>await</code> pauses execution until that Promise resolves, letting asynchronous code read top-to-bottom like synchronous code.</p>
+    <pre><code>async function load() {
+  const data = await fetchData();
+  console.log(data);
+}</code></pre>
+    <div class="note-tip">Forgetting <code>await</code> is a common bug — you'll be left holding a Promise object instead of the actual data.</div>
+
+    <h2>Error handling</h2>
+    <p>Wrap code that might fail — especially awaited calls — in <code>try/catch</code> so errors don't crash the app.</p>
+    <pre><code>try {
+  const data = await getData();
+} catch (err) {
+  console.error(err);
+}</code></pre>
+
+    <h2>Timers</h2>
+    <p><code>setTimeout()</code> runs code once after a delay. <code>setInterval()</code> runs code repeatedly on a fixed delay.</p>
+
+  </div>
+</main>
+
+<footer class="site-footer">Related: <a href="../../quizzes/javascript/index.html">Take the JavaScript Fundamentals quiz →</a></footer>
+
+</body>
+</html>

@@ -1,32 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JavaScript/Node.js Reviewer</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Reviewer</title>
+<link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <h1>Node.js Reviewer</h1>
-  <div id="setSelection">
-  <h2>Choose a Quiz Set</h2>
 
-  <button onclick="startQuiz('A')">
-    Set A - Fundamentals
-  </button>
-
-  <button onclick="startQuiz('B')">
-    Set B - Applications
-  </button>
-
-  <button onclick="startQuiz('C')">
-    Set C - Debugging
-  </button>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">Study<span>.</span>Reviewer</a>
+    <nav class="site-nav">
+      <a href="index.html" class="is-active">Home</a>
+      <a href="notes/index.html">Notes</a>
+      <a href="quizzes/index.html">Quizzes</a>
+    </nav>
   </div>
+</header>
 
-  <div id="quiz"></div>
-  <div id="result"></div>
-  <!-- External JS file -->
-  <script src="quiz3.js"></script>
+<main>
+  <h1 class="page-title">Study Reviewer</h1>
+  <p class="page-subtitle">Notes and practice quizzes for programming topics. Pick a subject below to start reading or testing yourself.</p>
+
+  <section class="hub-section">
+    <div class="hub-section__head">
+      <h2>📘 Notes</h2>
+      <a href="notes/index.html">View all →</a>
+    </div>
+    <div class="card-grid">
+      <a class="card" href="notes/javascript/index.html">
+        <span class="card__eyebrow">Notes</span>
+        <h3 class="card__title">JavaScript Fundamentals</h3>
+        <p class="card__desc">Core syntax, data types, arrays, and async basics.</p>
+      </a>
+      <a class="card" href="notes/nodejs/index.html">
+        <span class="card__eyebrow">Notes</span>
+        <h3 class="card__title">Node.js</h3>
+        <p class="card__desc">Core modules, npm, REST basics, and the event loop.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="hub-section">
+    <div class="hub-section__head">
+      <h2>📝 Quizzes</h2>
+      <a href="quizzes/index.html">View all →</a>
+    </div>
+    <div class="card-grid">
+      <a class="card" href="quizzes/javascript/index.html">
+        <span class="card__eyebrow">Quiz · 3 sets</span>
+        <h3 class="card__title">JavaScript Fundamentals</h3>
+        <p class="card__desc">60 questions across fundamentals, applications, and debugging.</p>
+      </a>
+      <a class="card" href="quizzes/nodejs/index.html">
+        <span class="card__eyebrow">Quiz · 3 sets</span>
+        <h3 class="card__title">Node.js</h3>
+        <p class="card__desc">60 questions across fundamentals, applications, and debugging.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">More subjects get added here as the reviewer grows.</footer>
+
 </body>
 </html>
