@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Notes — Study Reviewer</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../../index.html">Study<span>.</span>Reviewer</a>
+    <nav class="site-nav">
+      <a href="../../index.html">Home</a>
+      <a href="../index.html" class="is-active">Notes</a>
+      <a href="../../quizzes/index.html">Quizzes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Notes</a> / Linux</div>
+  <h1 class="page-title">Linux</h1>
+  <p class="page-subtitle">History, kernel design, shells, file systems, and directory structure — the concepts tested in the matching quiz.</p>
+
+  <div class="notes-content">
+
+    <h2>What is an operating system / kernel?</h2>
+    <p>An <strong>operating system (OS)</strong> is system software that manages computer hardware and software resources and provides common services for programs. The <strong>kernel</strong> is the core component of the OS — it manages the CPU, memory, and I/O devices, and acts as the bridge between applications and the hardware through system calls.</p>
+
+    <h2>Timeline: Unix → GNU → MINIX → Linux</h2>
+    <ul>
+      <li><strong>1969</strong> — <strong>Unix</strong> is developed by Ken Thompson and Dennis Ritchie at AT&amp;T Bell Labs (first released 1971; rewritten in C in 1973).</li>
+      <li><strong>1977</strong> — UC Berkeley releases <strong>BSD</strong>, a free Unix-like system.</li>
+      <li><strong>1983</strong> — <strong>Richard Stallman</strong> starts the <strong>GNU</strong> ("GNU's Not Unix") project to build a free Unix-like OS. Its kernel, Hurd, never attracted enough developers, leaving GNU without a kernel of its own.</li>
+      <li><strong>1987</strong> — Andrew S. Tanenbaum releases <strong>MINIX</strong>, a Unix-like system intended for <strong>academic use</strong>; the source was viewable but modification/redistribution were restricted.</li>
+      <li><strong>1991</strong> — <strong>Linus Torvalds</strong> releases the <strong>Linux kernel</strong> (v0.01, developed as a cross-development project under MINIX; publicly announced/released September 17, 1991), which was soon combined with GNU tools to form a complete OS — hence "GNU/Linux."</li>
+    </ul>
+    <div class="note-tip">Order to remember: Unix (1969) → BSD (1977) → GNU project started (1983) → MINIX (1987) → Linux kernel (1991). MINIX was built for academic use, not Linux.</div>
+
+    <h2>Kernel types</h2>
+    <p>Kernels are classified by how much runs in kernel space vs. user space:</p>
+    <ul>
+      <li><strong>Monolithic kernel</strong> — all OS services run in kernel space (best performance, more complex). Examples: <strong>Linux</strong>, Unix, OpenVMS.</li>
+      <li><strong>Microkernel</strong> — minimal services in kernel space, rest in user space (more stable, more context switches). Examples: Mach, L4, <strong>MINIX</strong>.</li>
+      <li><strong>Hybrid kernel</strong> — combines monolithic speed with microkernel modularity. Examples: <strong>Windows NT</strong> kernel, and the <strong>Darwin/XNU kernel used by macOS and iOS</strong> (built on the Mach microkernel plus BSD components).</li>
+      <li><strong>Exokernel</strong> — exposes hardware resources directly to applications with minimal abstraction (e.g., Nemesis).</li>
+      <li><strong>Nanokernel</strong> — hardware abstraction with essentially no system services (e.g., EROS).</li>
+    </ul>
+    <div class="note-tip">Linux's kernel is monolithic. Windows (NT kernel) and macOS/iOS (Darwin/XNU) are both hybrid kernels.</div>
+
+    <h2>Linux architecture (user space vs. kernel space)</h2>
+    <p>User applications and libraries (like glibc) run in <strong>user mode</strong> and talk to the kernel through the <strong>system call interface</strong>. The <strong>Linux kernel</strong> itself runs in <strong>kernel mode</strong> and contains subsystems for process scheduling, memory management, IPC, virtual files, and networking, sitting directly above the hardware.</p>
+
+    <h2>Shells</h2>
+    <p>A <strong>shell</strong> is a program that interfaces between the user and the kernel — it takes commands, passes them to the kernel, and displays the output.</p>
+    <ul>
+      <li><strong>Bourne shell (sh)</strong> — <code>/bin/sh</code>, the original Unix shell by Steve Bourne; no built-in arithmetic or command history.</li>
+      <li><strong>Bash (GNU Bourne-Again shell)</strong> — <code>/bin/bash</code>, Bourne-compatible with command recall/editing; the common Linux default.</li>
+      <li><strong>C shell (csh)</strong> — <code>/bin/csh</code>, created by Bill Joy at UC Berkeley; C-like syntax and command history.</li>
+      <li><strong>Korn shell (ksh)</strong> — <code>/bin/ksh</code>, by David Korn at AT&amp;T; a superset of the Bourne shell.</li>
+      <li><strong>Z shell (zsh)</strong> — <code>/bin/zsh</code>, highly customizable, plugin/theme support.</li>
+    </ul>
+    <p>By default, the root user's prompt ends in <code>#</code> while a regular user's prompt ends in <code>$</code> (or <code>%</code> for csh).</p>
+
+    <h2>File systems</h2>
+    <p>The <strong>MINIX file system was Linux's first file system</strong>, inherited from its cross-development under MINIX. It was mostly bug-free but limited to a 64MB maximum size and 14-character filenames.</p>
+    <ul>
+      <li><strong>ext (1992) / ext2 (1993)</strong> — created chiefly by Rémy Card. <strong>ext2 has no journal</strong>, which is exactly why it's still favored for flash media (SD cards, USB drives): fewer writes, better endurance.</li>
+      <li><strong>ext3 (2001)</strong> — adds journaling on top of the ext2 design.</li>
+      <li><strong>ext4 (2009)</strong> — successor to ext3; supports larger volumes/files and can optionally run journal-less.</li>
+      <li><strong>Btrfs (2009)</strong> — copy-on-write file system aimed at fault tolerance and large-scale storage.</li>
+      <li><strong>ReiserFS (2001)</strong> — journaling file system, formerly the default on SUSE.</li>
+      <li>Windows uses <strong>FAT, NTFS, exFAT, and ReFS</strong> instead — plain FAT (like ext2) also has no journal.</li>
+    </ul>
+    <div class="note-tip">If asked "which file system does not use journaling," think ext2 (or FAT) — journaling was introduced with ext3.</div>
+
+    <h2>The Linux directory structure (FHS)</h2>
+    <ul>
+      <li><code>/</code> — the root of the entire file system.</li>
+      <li><code>/bin</code> — <strong>essential command binaries</strong> needed for minimal functionality, booting, and repairing the system (e.g., <code>cat</code>, <code>ls</code>, <code>cp</code>), available to all users.</li>
+      <li><code>/sbin</code> — essential <em>system</em> binaries, mainly for the root user (e.g., <code>fsck</code>, <code>init</code>, <code>route</code>).</li>
+      <li><code>/etc</code> — <strong>host-specific, static configuration files</strong> for the system (historically "etcetera"; may not contain binaries).</li>
+      <li><code>/boot</code> — boot loader files (kernel images, initrd).</li>
+      <li><code>/dev</code> — device files.</li>
+      <li><code>/home</code> — regular users' home directories; <code>/root</code> is the home directory of the root user specifically.</li>
+      <li><code>/lib</code>, <code>/lib64</code> — libraries needed by <code>/bin</code> and <code>/sbin</code>.</li>
+      <li><code>/mnt</code>, <code>/media</code> — mount points for file systems and removable media.</li>
+      <li><code>/opt</code> — add-on application packages.</li>
+      <li><code>/proc</code>, <code>/sys</code> — virtual file systems exposing kernel/process/device information.</li>
+      <li><code>/tmp</code> — temporary files, often cleared on reboot.</li>
+      <li><code>/usr</code> — secondary hierarchy of shareable, read-only user resources (<code>/usr/bin</code>, <code>/usr/lib</code>, etc.).</li>
+      <li><code>/var</code> — variable data that changes during operation (logs, spool files, mail).</li>
+    </ul>
+    <div class="note-tip">Quick pair to remember: <code>/etc</code> = configuration files. <code>/bin</code> = essential executable binaries.</div>
+
+    <h2>Package managers by distribution</h2>
+    <ul>
+      <li><strong>Debian / Ubuntu</strong> — <code>.deb</code> packages via <strong>apt</strong> / <code>apt-get</code> / <code>dpkg</code>.</li>
+      <li><strong>Arch Linux</strong> — <code>.pkg.tar.zst</code> packages via <strong>pacman</strong> (e.g., <code>pacman -S package</code>, <code>pacman -Syu</code> to sync and upgrade).</li>
+      <li><strong>Fedora</strong> — <code>.rpm</code> packages via <strong>dnf</strong> (the successor to yum).</li>
+      <li><strong>CentOS / RHEL</strong> — <code>.rpm</code> packages via <strong>yum</strong>.</li>
+      <li><strong>openSUSE</strong> — packages via <strong>zypper</strong>.</li>
+    </ul>
+    <div class="note-tip">Arch Linux's defining package manager is <strong>pacman</strong>.</div>
+
+    <h2>Boot loaders</h2>
+    <p><strong>GNU GRUB</strong> (GRand Unified Bootloader) is the boot loader used by most Linux distributions today; it lets a system choose between multiple installed OSes or kernel configurations. <strong>LILO</strong> (Linux Loader) was the older default before GRUB took over, and its development stopped in 2015.</p>
+
+    <h2>Distributions (distro)</h2>
+    <p>A Linux <strong>distribution</strong> packages the kernel with supporting software (much of it from the GNU project) for desktop or server use. Well-known examples include Debian, Ubuntu (based on Debian), Fedora and CentOS (RPM-based, tied to Red Hat), SUSE, Slackware, Gentoo, and Arch Linux. Android is also Linux-kernel-based.</p>
+
+    <h2>Users: root vs. regular users</h2>
+    <p>The <strong>root</strong> user is the Linux superuser, with unrestricted administrative access to the whole system; its home directory is <code>/root</code>. Regular users have their own home directories under <code>/home</code> and need elevated privileges (e.g., via <code>sudo</code> or the <code>su</code> command) to perform administrative tasks.</p>
+
+  </div>
+</main>
+
+<footer class="site-footer">Related: <a href="../../quizzes/linux/index.html">Take the Linux quiz →</a></footer>
+
+</body>
+</html>
