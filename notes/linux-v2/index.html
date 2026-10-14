@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux v2 Notes — Study Reviewer</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../../index.html">Study<span>.</span>Reviewer</a>
+    <nav class="site-nav">
+      <a href="../../index.html">Home</a>
+      <a href="../index.html" class="is-active">Notes</a>
+      <a href="../../quizzes/index.html">Quizzes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Notes</a> / Linux v2</div>
+  <h1 class="page-title">Linux v2 — Commands, Networks &amp; Servers</h1>
+  <p class="page-subtitle">Permissions, sudo users, network configuration, package installation, and server services — the practical side of Linux administration, matching the Linux v2 quiz.</p>
+
+  <div class="notes-content">
+
+    <!-- ===================== SET A ===================== -->
+
+    <h2>File ownership</h2>
+    <p>Every Linux file has an owner and belongs to a group. Access is defined separately for three classes:</p>
+    <ul>
+      <li><strong>User (u)</strong> — the owner. By default, whoever creates a file owns it.</li>
+      <li><strong>Group (g)</strong> — a group can contain many users; every member gets the same group permissions.</li>
+      <li><strong>Other (o)</strong> — anyone who is neither the owner nor in the file's group.</li>
+      <li><strong>All (a)</strong> — all three at once (same as <code>ugo</code>).</li>
+    </ul>
+
+    <h2>File permissions</h2>
+    <ul>
+      <li><strong>Read (r)</strong> — open and read a file. On a <em>directory</em>: list its contents.</li>
+      <li><strong>Write (w)</strong> — modify a file's contents. On a <em>directory</em>: add, remove, and rename files inside it.</li>
+      <li><strong>Execute (x)</strong> — run a file as a program. Unlike Windows (<code>.exe</code>), Linux will not run a file unless execute is set, even if you can read and write it.</li>
+    </ul>
+    <h3>Reading <code>ls -l</code></h3>
+    <pre><code>-rw-r--r--  1 alice users  2321 Mar 15  notes.txt
+drwxr-xr-x  2 alice users  1024 Jan 25  Xfonts</code></pre>
+    <ul>
+      <li>1st character = type: <code>-</code> file, <code>d</code> directory, <code>l</code> symbolic link.</li>
+      <li>Next 9 characters = three sets of <code>rwx</code> for <strong>owner, group, other</strong> (in that order).</li>
+      <li>Then: number of hard links, owner, group, size in bytes, last-modified date, name.</li>
+    </ul>
+
+    <h2>chmod — change mode</h2>
+    <p>Syntax: <code>chmod &lt;options&gt; &lt;permissions&gt; &lt;file/dir&gt;</code>. It works in two modes.</p>
+    <h3>Absolute (numeric) mode</h3>
+    <p>Add up the values for each class: <strong>r = 4, w = 2, x = 1, none = 0</strong>.</p>
+    <pre><code>rwx = 4+2+1 = 7
+r-x = 4+0+1 = 5
+r-- = 4+0+0 = 4
+
+chmod 754 file       # owner rwx, group r-x, other r--
+chmod 644 file.htm   # owner rw-, group r--, other r--
+chmod 666 file.txt   # everyone rw-
+chmod -R 755 itemsDir   # -R = recursive (directory and everything inside)</code></pre>
+    <h3>Symbolic mode</h3>
+    <p>Classes: <code>u</code> user, <code>g</code> group, <code>o</code> other, <code>a</code> all. Operators:</p>
+    <ul>
+      <li><code>+</code> adds the specified modes</li>
+      <li><code>-</code> removes the specified modes</li>
+      <li><code>=</code> sets the modes to exactly what you specify</li>
+    </ul>
+    <pre><code>chmod u=rwx,g=rx,o=r file     # same as 754
+chmod u=rw image.jpg
+chmod o-wx netconfig.conf     # remove write+execute from others
+chmod o+r fileName            # give others read
+chmod u+x run.sh              # make a script runnable by its owner</code></pre>
+    <div class="note-tip"><code>chmod 774 netconfig.conf</code> → owner rwx, group rwx, other r--. Quick memory trick: 7 = everything, 6 = read+write, 5 = read+execute, 4 = read only.</div>
+
+    <h2>chown — change ownership</h2>
+    <p>Changes the owner and/or group of files and directories. Usually needs <code>sudo</code>.</p>
+    <pre><code>sudo chown mike file.txt                  # owner only
+sudo chown alice file1 file2 file3        # several files
+sudo chown bob file*                      # wildcard
+sudo chown alice:admins file1 file2       # owner:group
+sudo chown -R alice:alice Documents       # -R = recursive
+chown --from=root:staff bob:root file1    # only change if current owner:group match</code></pre>
+
+    <h2>Creating a sudo user</h2>
+    <ol>
+      <li>Log in as root.</li>
+      <li>Add the user: <code>adduser newuser</code> (or <code>useradd newuser</code>).</li>
+      <li>Add them to the sudo group: <code>usermod -aG sudo newuser</code> — the <code>-a</code> means <em>append</em>; without it the user is removed from their other groups.</li>
+      <li>Verify: <code>getent group sudo</code> (should list the user).</li>
+      <li>Use it: <code>su - newuser</code>, then <code>sudo ls -al /root</code>.</li>
+    </ol>
+    <p>Sudo privileges are defined in <code>/etc/sudoers</code>. Always edit it with <code>visudo</code> (it checks syntax so you can't lock yourself out). The default editor can be changed: <code>EDITOR=nano visudo</code>.</p>
+
+    <!-- ===================== SET B ===================== -->
+
+    <h2>Hosts file &amp; hostname</h2>
+    <ul>
+      <li><strong>/etc/hosts</strong> — plain-text file used to translate hostnames into IP addresses, and to give easy names to machines on a small home/office network. Edit with <code>sudo nano /etc/hosts</code>, e.g. <code>127.0.0.1 new-hostname</code>.</li>
+      <li><strong>/etc/hostname</strong> — stores the computer's name.</li>
+    </ul>
+    <pre><code>hostname                              # show the current name
+sudo nano /etc/hostname               # permanent (edit file)
+sudo hostname new-hostname            # temporary, no restart needed
+hostnamectl set-hostname 'my-laptop'  # set via systemd</code></pre>
+
+    <h2>ifconfig / iwconfig / ip</h2>
+    <ul>
+      <li><code>ifconfig</code> = "interface configuration" — view and change network interface settings.</li>
+      <li><code>iwconfig</code> — like ifconfig, but for <strong>wireless</strong> interfaces only.</li>
+      <li><code>ip address</code> / <code>ip a</code> — the modern way to view interface addresses.</li>
+    </ul>
+    <pre><code>sudo ifconfig eth0 192.168.100.100/24
+sudo ifconfig enp0s3 192.168.100.100 netmask 255.255.255.0
+sudo route add default gw 192.168.0.253 eth0
+route -n          # show the kernel IP routing table (numeric)</code></pre>
+    <div class="note-tip">You need root/administrator rights to change an IP address. Changes made with <code>ifconfig</code> are <strong>temporary</strong> — they only last for the current session. Setting an IP manually also means you are leaving DHCP for static addressing.</div>
+
+    <h2>Netplan (Ubuntu Server 18.04+ / 22)</h2>
+    <p>Config file: <code>/etc/netplan/00-installer-config.yaml</code>. Edit it, save (<strong>Ctrl+O</strong>), exit (<strong>Ctrl+X</strong>) in nano, then apply with <code>sudo netplan apply</code>.</p>
+    <h3>DHCP (automatic address)</h3>
+    <pre><code>network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp3s0:
+      dhcp4: true</code></pre>
+    <h3>Static address (Ubuntu Server 22)</h3>
+    <pre><code>network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: no
+      addresses:
+        - 192.168.1.200/24
+      routes:
+        - to: default
+          via: 192.168.1.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 8.8.4.4</code></pre>
+    <div class="note-tip">Older examples use <code>gateway4: 192.168.1.1</code> for the gateway. Newer netplan versions deprecate it in favour of <code>routes</code> with <code>to: default</code> and <code>via</code>. YAML is indentation-sensitive — use spaces, never tabs.</div>
+
+    <h2>Network files on Debian &amp; Ubuntu (ifupdown)</h2>
+    <p>Older systems use <code>/etc/network/interfaces</code> (create it if missing):</p>
+    <pre><code>iface eth0 inet static
+address 192.168.0.2
+netmask 255.255.255.0
+gateway 192.168.0.1</code></pre>
+    <p>Edit with <code>sudo nano</code> (Ctrl+O save, Ctrl+X exit) or <code>sudo vim</code> (<code>:w</code> save, <code>:q</code> quit). Then restart networking:</p>
+    <pre><code>sudo systemctl restart networking.service
+sudo /etc/init.d/networking restart     # or stop / start
+ifup eth0      # bring one interface up
+ifup -a        # bring all interfaces up
+ifdown -a      # take all interfaces down
+ip a           # verify the result</code></pre>
+
+    <!-- ===================== SET C ===================== -->
+
+    <h2>What is a server?</h2>
+    <p>A server is hardware or software that provides functionality (<em>services</em>) to other programs or devices called <strong>clients</strong>. This is the <strong>client–server model</strong>, usually implemented as <strong>request–response</strong>: the client sends a request, the server performs an action and sends back a response. One server can serve many clients, and one client can use many servers.</p>
+    <ul>
+      <li>Any computer can be a server — what separates a server from a <strong>workstation</strong> is the <em>function</em> it performs, not the hardware (though servers usually have more RAM and robust 24/7 operating systems).</li>
+      <li><strong>Network servers</strong> became common in the early 1990s, when PCs began providing services formerly hosted on mainframes and minicomputers.</li>
+    </ul>
+
+    <h2>Common server types &amp; Linux software</h2>
+    <ul>
+      <li><strong>Web server</strong> — Apache, Nginx, LiteSpeed, lighttpd (serves content over HTTP)</li>
+      <li><strong>Database server</strong> — MySQL, MariaDB, PostgreSQL, MongoDB, DB2</li>
+      <li><strong>DNS server</strong> — BIND9 (translates domain names to IP addresses)</li>
+      <li><strong>DHCP server</strong> — isc-dhcp-server (hands out IP addresses automatically)</li>
+      <li><strong>File server</strong> — Samba (Windows-compatible sharing) · <strong>FTP server</strong> — vsftpd; clients include FileZilla and WinSCP</li>
+      <li><strong>SSH server</strong> — OpenSSH; clients include PuTTY, SecureCRT, MobaXterm</li>
+      <li><strong>Mail server</strong> — Sendmail, Postfix, Zimbra</li>
+      <li><strong>Proxy server</strong> — Squid, Tiny Proxy, Privoxy (sits between a client and an external server to filter requests, improve performance, and share connections)</li>
+      <li><strong>Print server</strong> — CUPS (Common UNIX Printing System)</li>
+      <li>Others: application (middleware between database and user), collaboration, list, virtual, game, real-time communication (IRC), Telnet servers.</li>
+    </ul>
+    <p>Microsoft platforms (for comparison): Exchange (email/calendar), Lync (real-time communications), SharePoint (collaboration), SQL Server (RDBMS), IIS (web), and Hyper-V (Type-1 hypervisor).</p>
+
+    <h2>Installing software</h2>
+    <ul>
+      <li><strong>GUI tools:</strong> Ubuntu Software Center, Software Manager (Linux Mint), Synaptic Package Manager.</li>
+      <li><strong>Downloaded software:</strong> proprietary installers, third-party repositories, or unpacking a binary archive.</li>
+      <li><strong>Terminal:</strong> <code>apt install</code> / <code>apt-get install</code> (Debian/Ubuntu), <code>yum</code> / <code>dnf</code> (Red Hat family), <code>pacman -S</code> (Arch), <code>dpkg</code> and <code>rpm</code> (low-level package files), <code>pkg install</code> (BSD), <code>slackpkg</code> / <code>slapt-get</code> (Slackware).</li>
+      <li><strong>tasksel</strong> — a Debian/Ubuntu tool that installs several related packages together as one "task" (e.g. web server, DNS server, print server). It is used during installation but can be run any time.</li>
+      <li><strong>Windows software on Linux:</strong> <strong>Wine</strong> ("Wine Is Not an Emulator") is a compatibility layer; or use a virtual machine (VirtualBox, VMware, Virtual PC, Red Hat Virtualization).</li>
+    </ul>
+
+    <h2>Web server — the LAMP stack</h2>
+    <p><strong>LAMP</strong> = <strong>L</strong>inux + <strong>A</strong>pache + <strong>M</strong>ySQL + <strong>P</strong>HP: open-source software installed together to host dynamic websites and PHP web apps. Site data lives in MySQL; PHP processes dynamic content.</p>
+    <pre><code># Step 1 — Apache
+sudo apt update
+sudo apt upgrade
+sudo apt install apache2
+sudo ufw app list
+sudo ufw allow in "Apache"
+sudo ufw status
+
+# Step 2 — MySQL
+sudo apt install mysql-server
+sudo mysql_secure_installation
+sudo apt install phpmyadmin
+
+# Step 3 — PHP
+sudo apt install php libapache2-mod-php php-mysql
+
+# Step 4 — site folder
+sudo mkdir /var/www/test_app/
+
+# Step 5 — test in a browser
+http://IP_address/test_app</code></pre>
+    <h3>UFW Apache profiles</h3>
+    <ul>
+      <li><strong>Apache</strong> — opens only port 80 (normal, unencrypted web traffic)</li>
+      <li><strong>Apache Full</strong> — opens port 80 and port 443 (TLS/SSL encrypted)</li>
+      <li><strong>Apache Secure</strong> — opens only port 443</li>
+    </ul>
+
+    <h2>SSH server</h2>
+    <p><strong>SSH (Secure SHell)</strong> is a cryptographic network protocol for operating network services securely over an unsecured network — typically remote login and remote command execution. Standard TCP port: <strong>22</strong>.</p>
+    <pre><code>sudo apt update
+sudo apt install openssh-server
+sudo systemctl status sshd
+sudo ufw allow ssh
+ssh username@ip_address
+
+# key-based login
+ssh-keygen -t rsa
+ssh-copy-id user@ssh-ip-address</code></pre>
+
+    <h2>FTP server (vsftpd)</h2>
+    <pre><code>sudo apt update &amp;&amp; sudo apt install vsftpd
+sudo service vsftpd status
+
+# firewall
+sudo ufw deny 20/tcp
+sudo ufw allow 21/tcp     # FTP
+sudo ufw allow 22/tcp     # SSH</code></pre>
+    <p>FTP (File Transfer Protocol) is one of the oldest Internet services, used to move files between computers. Port 21 is the FTP control port.</p>
+
+    <h2>DHCP server (dhcpd)</h2>
+    <p>Example plan: network <code>192.168.100.0</code>, server IP <code>192.168.100.100</code>, netmask <code>255.255.255.0</code>, lease range <code>192.168.100.101 – 192.168.100.200</code> (100 addresses).</p>
+    <pre><code>sudo apt install isc-dhcp-server -y      # ISC = Internet Systems Consortium
+sudo nano /etc/dhcp/dhcpd.conf</code></pre>
+    <pre><code>authoritative;     # the only (official) DHCP server on the network
+
+subnet 192.168.100.0 netmask 255.255.255.0 {
+  range 192.168.100.101 192.168.100.200;
+  option domain-name-servers 192.168.100.1;
+  option routers 192.168.100.2;
+}</code></pre>
+    <pre><code>sudo systemctl restart isc-dhcp-server.service   # apply changes
+dhcp-lease-list                                  # test: see leased clients</code></pre>
+    <h3>Fixed (reserved) IP for one machine</h3>
+    <pre><code>host web-server {
+  hardware ethernet 00:0c:29:c3:a0:1b;
+  fixed-address 192.168.100.9;
+}</code></pre>
+
+    <h2>Starting, stopping &amp; restarting services</h2>
+    <p>Two officially adopted methods:</p>
+    <pre><code># systemctl (CentOS, Ubuntu, Red Hat, Fedora, Debian, and more)
+sudo systemctl start httpd
+sudo systemctl stop httpd
+sudo systemctl restart httpd
+
+# service
+sudo service httpd start
+sudo service httpd stop
+sudo service httpd restart</code></pre>
+    <div class="note-tip"><code>httpd</code> is the Apache service name on Red Hat–family systems; on Debian/Ubuntu it is <code>apache2</code>.</div>
+
+    <h2>Quick cheat sheet</h2>
+    <ul>
+      <li>Change permissions → <code>chmod</code> · change owner → <code>chown</code></li>
+      <li>Add to sudo → <code>usermod -aG sudo user</code> · edit sudoers → <code>visudo</code></li>
+      <li>Hostname file → <code>/etc/hostname</code> · name-to-IP map → <code>/etc/hosts</code></li>
+      <li>Netplan → <code>/etc/netplan/00-installer-config.yaml</code> then <code>sudo netplan apply</code></li>
+      <li>Old-style network file → <code>/etc/network/interfaces</code></li>
+      <li>Ports: SSH 22 · FTP 21 · HTTP 80 · HTTPS 443</li>
+      <li>DHCP config → <code>/etc/dhcp/dhcpd.conf</code> · service → <code>isc-dhcp-server</code></li>
+    </ul>
+
+  </div>
+</main>
+
+<footer class="site-footer">Related: <a href="../../quizzes/linux-v2/index.html">Take the Linux v2 quiz →</a></footer>
+
+</body>
+</html>
